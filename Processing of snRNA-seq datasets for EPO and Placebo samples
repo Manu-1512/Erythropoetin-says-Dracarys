@@ -1,0 +1,233 @@
+#### Singh et al - Raw data (h5 post cellBender) processing ####
+library(Seurat)
+library(ggplot2)
+library(patchwork)
+#set seed for reproducibility
+set.seed(0)
+
+#### Working through all samples - manual input is necessary to determine the values ####
+#### Sample A1 ####
+Read10X_h5("A1_filtered.h5") -> snRNA_A1
+CreateSeuratObject(snRNA_A1,project = "A1") -> snRNA_A1
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A1@assays[["RNA"]]), value = TRUE)
+snRNA_A1[["percent.mt"]] <- PercentageFeatureSet(snRNA_A1, pattern = "^mt-")
+VlnPlot(snRNA_A1, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A1_Vln.png", width = 25, height = 17, units = "cm")
+plot1 <- FeatureScatter(snRNA_A1, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A1, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10270) + geom_hline(yintercept=500) + geom_vline(xintercept=86000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A1_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A1 <- subset(snRNA_A1, subset = nFeature_RNA > 500 & nFeature_RNA < 10270 & percent.mt < 0.005 & nCount_RNA < 86000)
+snRNA_A1$type <- "A_Samples"
+rm(plot1,plot2,mito.genes)
+Idents(snRNA_A1) <- "A1"
+
+#### Sample A2 ####
+Read10X_h5("A2_filtered.h5") -> snRNA_A2
+CreateSeuratObject(snRNA_A2,project = "A2") -> snRNA_A2
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A2@assays[["RNA"]]), value = TRUE)
+snRNA_A2[["percent.mt"]] <- PercentageFeatureSet(snRNA_A2, pattern = "^mt-")
+VlnPlot(snRNA_A2, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A2_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_A2, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10000) + geom_vline(xintercept = 85000)
+plot1 <- FeatureScatter(snRNA_A2, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A2, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10000) + geom_hline(yintercept=500) + geom_vline(xintercept=85000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A2_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A2 <- subset(snRNA_A2, subset = nFeature_RNA > 500 & nFeature_RNA < 10000 & percent.mt < 0.005 & nCount_RNA < 85000)
+snRNA_A2$type <- "A_Samples"
+rm(plot1,plot2,mito.genes)
+Idents(snRNA_A2) <- "A2"
+
+#### Sample A3 ####
+Read10X_h5("A3_filtered.h5") -> snRNA_A3
+CreateSeuratObject(snRNA_A3,project = "A3") -> snRNA_A3
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A3@assays[["RNA"]]), value = TRUE)
+snRNA_A3[["percent.mt"]] <- PercentageFeatureSet(snRNA_A3, pattern = "^mt-")
+VlnPlot(snRNA_A3, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A3_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_A3, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10000) + geom_vline(xintercept = 85000)
+plot1 <- FeatureScatter(snRNA_A3, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A3, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10000) + geom_hline(yintercept=500) + geom_vline(xintercept=85000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A3_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A3 <- subset(snRNA_A3, subset = nFeature_RNA > 500 & nFeature_RNA < 10000 & percent.mt < 0.005 & nCount_RNA < 85000)
+rm(plot1,plot2,mito.genes)
+snRNA_A3$type <- "A_Samples"
+Idents(snRNA_A3) <- "A3"
+
+#### Sample A4 ####
+Read10X_h5("A4_filtered.h5") -> snRNA_A4
+CreateSeuratObject(snRNA_A4,project = "A4") -> snRNA_A4
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A4@assays[["RNA"]]), value = TRUE)
+snRNA_A4[["percent.mt"]] <- PercentageFeatureSet(snRNA_A4, pattern = "^mt-")
+VlnPlot(snRNA_A4, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A4_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_A4, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 9500) + geom_vline(xintercept = 63000)
+plot1 <- FeatureScatter(snRNA_A4, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A4, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=9500) + geom_hline(yintercept=500) + geom_vline(xintercept=63000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A4_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A4 <- subset(snRNA_A4, subset = nFeature_RNA > 500 & nFeature_RNA < 9500 & percent.mt < 0.005 & nCount_RNA < 63000)
+rm(plot1,plot2,mito.genes)
+snRNA_A4$type <- "A_Samples"
+Idents(snRNA_A4) <- "A4"
+
+#### Sample A5 ####
+Read10X_h5("A5_filtered.h5") -> snRNA_A5
+CreateSeuratObject(snRNA_A5,project = "A5") -> snRNA_A5
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A5@assays[["RNA"]]), value = TRUE)
+snRNA_A5[["percent.mt"]] <- PercentageFeatureSet(snRNA_A5, pattern = "^mt-")
+VlnPlot(snRNA_A5, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A5_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_A5, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 9700) + geom_vline(xintercept = 60000)
+plot1 <- FeatureScatter(snRNA_A5, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A5, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=9700) + geom_hline(yintercept=500) + geom_vline(xintercept=60000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A5_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A5 <- subset(snRNA_A5, subset = nFeature_RNA > 500 & nFeature_RNA < 9700 & percent.mt < 0.005 & nCount_RNA < 60000)
+rm(plot1,plot2,mito.genes)
+snRNA_A5$type <- "A_Samples"
+Idents(snRNA_A5) <- "A5"
+
+#### Sample A6 ####
+Read10X_h5("A6_filtered.h5") -> snRNA_A6
+CreateSeuratObject(snRNA_A6,project = "A6") -> snRNA_A6
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_A6@assays[["RNA"]]), value = TRUE)
+snRNA_A6[["percent.mt"]] <- PercentageFeatureSet(snRNA_A6, pattern = "^mt-")
+VlnPlot(snRNA_A6, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_A6_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_A6, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10000) + geom_vline(xintercept = 61500)
+plot1 <- FeatureScatter(snRNA_A6, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_A6, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10000) + geom_hline(yintercept=500) + geom_vline(xintercept=61500)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_A6_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_A6 <- subset(snRNA_A6, subset = nFeature_RNA > 500 & nFeature_RNA < 10000  & percent.mt < 0.005 & nCount_RNA < 61500)
+rm(plot1,plot2,mito.genes)
+snRNA_A6$type <- "A_Samples"
+Idents(snRNA_A6) <- "A6"
+
+#### Sample B7 ####
+Read10X_h5("B7_filtered.h5") -> snRNA_B7
+CreateSeuratObject(snRNA_B7,project = "B7") -> snRNA_B7
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B7@assays[["RNA"]]), value = TRUE)
+snRNA_B7[["percent.mt"]] <- PercentageFeatureSet(snRNA_B7, pattern = "^mt-")
+VlnPlot(snRNA_B7, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B7_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_B7, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 9900) + geom_vline(xintercept = 6000)
+plot1 <- FeatureScatter(snRNA_B7, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B7, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=9900) + geom_hline(yintercept=500) + geom_vline(xintercept=68000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B7_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B7 <- subset(snRNA_B7, subset = nFeature_RNA > 500 & nFeature_RNA < 9900 & percent.mt < 0.005 & nCount_RNA < 68000)
+rm(plot1,plot2,mito.genes)
+snRNA_B7$type <- "B_Samples"
+Idents(snRNA_B7) <- "B7"
+
+#### Sample B8 ####
+Read10X_h5("B8_filtered.h5") -> snRNA_B8
+CreateSeuratObject(snRNA_B8,project = "B8") -> snRNA_B8
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B8@assays[["RNA"]]), value = TRUE)
+snRNA_B8[["percent.mt"]] <- PercentageFeatureSet(snRNA_B8, pattern = "^mt-")
+VlnPlot(snRNA_B8, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B8_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_B8, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10500) + geom_vline(xintercept = 82200)
+plot1 <- FeatureScatter(snRNA_B8, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B8, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10500) + geom_hline(yintercept=500) + geom_vline(xintercept=82200)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B8_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B8 <- subset(snRNA_B8, subset = nFeature_RNA > 500 & nFeature_RNA < 10500 & percent.mt < 0.005 & nCount_RNA < 82200)
+rm(plot1,plot2,mito.genes)
+snRNA_B8$type <- "B_Samples"
+Idents(snRNA_B8) <- "B8"
+
+#### Sample B9 ####
+Read10X_h5("B9_filtered.h5") -> snRNA_B9
+CreateSeuratObject(snRNA_B9,project = "B9") -> snRNA_B9
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B9@assays[["RNA"]]), value = TRUE)
+snRNA_B9[["percent.mt"]] <- PercentageFeatureSet(snRNA_B9, pattern = "^mt-")
+VlnPlot(snRNA_B9, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B9_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_B9, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10600) + geom_vline(xintercept = 84400)
+plot1 <- FeatureScatter(snRNA_B9, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B9, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10600) + geom_hline(yintercept=500) + geom_vline(xintercept=84400)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B9_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B9 <- subset(snRNA_B9, subset = nFeature_RNA > 500 & nFeature_RNA < 10600 & percent.mt < 0.005 & nCount_RNA < 84400)
+rm(plot1,plot2,mito.genes)
+snRNA_B9$type <- "B_Samples"
+Idents(snRNA_B9) <- "B9"
+
+#### Sample B10 ####
+Read10X_h5("B10_filtered.h5") -> snRNA_B10
+CreateSeuratObject(snRNA_B10,project = "B10") -> snRNA_B10
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B10@assays[["RNA"]]), value = TRUE)
+snRNA_B10[["percent.mt"]] <- PercentageFeatureSet(snRNA_B10, pattern = "^mt-")
+VlnPlot(snRNA_B10, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B10_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_B10, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10400) + geom_vline(xintercept = 74000)
+plot1 <- FeatureScatter(snRNA_B10, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B10, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10400) + geom_hline(yintercept=500) + geom_vline(xintercept=74000)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B10_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B10 <- subset(snRNA_B10, subset = nFeature_RNA > 500 & nFeature_RNA < 10400 & percent.mt < 0.005 & nCount_RNA < 74000)
+rm(plot1,plot2,mito.genes)
+snRNA_B10$type <- "B_Samples"
+Idents(snRNA_B10) <- "B10"
+
+#### Sample B11 ####
+Read10X_h5("B11_filtered.h5") -> snRNA_B11
+CreateSeuratObject(snRNA_B11,project = "B11") -> snRNA_B11
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B11@assays[["RNA"]]), value = TRUE)
+snRNA_B11[["percent.mt"]] <- PercentageFeatureSet(snRNA_B11, pattern = "^mt-")
+VlnPlot(snRNA_B11, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B11_Vln.png", width = 25, height = 17, units = "cm")
+eatureScatter(snRNA_B11, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 11200) + geom_vline(xintercept = 98700)
+plot1 <- FeatureScatter(snRNA_B11, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B11, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=11200) + geom_hline(yintercept=500) + geom_vline(xintercept=98700)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B11_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B11 <- subset(snRNA_B11, subset = nFeature_RNA > 500 & nFeature_RNA < 11200 & percent.mt < 0.005 & nCount_RNA < 98700)
+rm(plot1,plot2,mito.genes)
+snRNA_B11$type <- "B_Samples"
+Idents(snRNA_B11) <- "B11"
+
+#### Sample B12 ####
+Read10X_h5("B12_filtered.h5") -> snRNA_B12
+CreateSeuratObject(snRNA_B12,project = "B12") -> snRNA_B12
+
+mito.genes <- grep(pattern = "^mt-", x = rownames(snRNA_B12@assays[["RNA"]]), value = TRUE)
+snRNA_B12[["percent.mt"]] <- PercentageFeatureSet(snRNA_B12, pattern = "^mt-")
+VlnPlot(snRNA_B12, features = c("nFeature_RNA", "nCount_RNA","percent.mt"), ncol = 3)
+ggsave(plot = last_plot(), "snRNA_B12_Vln.png", width = 25, height = 17, units = "cm")
+FeatureScatter(snRNA_B12, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept = 10500) + geom_vline(xintercept = 82500)
+plot1 <- FeatureScatter(snRNA_B12, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(snRNA_B12, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + geom_hline(yintercept=10500) + geom_hline(yintercept=500) + geom_vline(xintercept=82500)
+plot1 + plot2
+ggsave(plot = last_plot(), "snRNA_B12_FeatureScatter.png", width = 30, height = 20, units = "cm")
+snRNA_B12 <- subset(snRNA_B12, subset = nFeature_RNA > 500 & nFeature_RNA < 10500 & percent.mt < 0.005 & nCount_RNA < 82500)
+rm(plot1,plot2,mito.genes)
+snRNA_B12$type <- "B_Samples"
+Idents(snRNA_B12) <- "B12"
+
+#### Combining all runs ####
+EPOsnRNA <- merge(snRNA_A1, y = c(snRNA_A2, snRNA_A3,snRNA_A4,snRNA_A5,snRNA_A6,
+                                  snRNA_B7,snRNA_B8,snRNA_B9,snRNA_B10,snRNA_B11,snRNA_B12),
+                  add.cell.ids = c("eA1", "eA2", "eA3","eA4","eA5","eA6",
+                                   "pB7","pB8","pB9","pB10","pB11","pB12"), project = "EPOsnRNA")
+
+GetAssay(EPOsnRNA)
+rm(list=setdiff(ls(), c("EPOsnRNA")))
+gc()
+saveRDS(EPOsnRNA,"EPO_snRNAseq_v2.rds")
