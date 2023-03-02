@@ -1,9 +1,80 @@
-library(SeuratWrappers)
+# ====================================
+# Author: Manu Singh
+# Date: 2022-09-18
+# Title: hippocampus-seq data analysis for Placebo and Erythropoeitin patients
+# ====================================
+
+# =====================================
+# Enviornment variables
+# =====================================
+setwd("~/Collab/Hannelore")
+getwd()
+Sys.Date()
+main_dir <- getwd()
+date <- gsub("-", "", Sys.Date())
+
+dir.create(file.path(main_dir, date), showWarnings = FALSE)
+setwd(file.path(main_dir, date))
+
+getwd()
+options(future.globals.maxSize = 6096*1524^2 )
+set.seed(2811)
+
+# =====================================
+# Load libraries
+# =====================================
+library(Seurat)
 library(ggplot2)
-library(patchwork)
-l
-library("Seurat")
-library("BiocFileCache")
+library(ggpubr)
+library(RCurl)
+library(gplots)
+library(BSDA)
+library(reshape)
+library(sctransform)
+library(tximport, lib.loc= "/home/ms3559/R/x86_64-pc-linux-gnu-library/3.5")
+sessionInfo()
+# =====================================
+# Load all the objects 
+# These objects were processed with Seurat v4 on 2020/05
+# =====================================
+
+
+############################
+
+
+hippocampus <- merge(x=hippocampus_objs[[1]], y=c(hippocampus_objs[[2]],hippocampus_objs[[3]],hippocampus_objs[[4]],hippocampus_objs[[5]],hippocampus_objs[[6]],hippocampus_objs[[7]]), add.cell.ids = c("Erythropoeitin_ 1", "Placebo_ 1", "Placebo_ 2","Placebo_ 3","Placebo_ 4", "Placebo_ 5", "Placebo_ 6", "Erythropoeitin_ 2", "Erythropoeitin_ 3", "Erythropoeitin_ 4", "Erythropoeitin_ 5", "Erythropoeitin_ 6"), project="Hannelore");
+rm(hippocampus_objs); # save some space
+str(hippocampus@meta.data) # examine the structure of the Seurat object meta data
+
+mito.genes <- grep(pattern = "^MT-", x = rownames(x = hippocampus), value = TRUE);
+percent.mito <- Matrix::colSums(x = GetAssayData(object = hippocampus, slot = 'counts')[mito.genes, ]) / Matrix::colSums(x = GetAssayData(object = hippocampus, slot = 'counts'));
+hippocampus[['percent.mito']] <- percent.mito;
+
+ribo.genes <- grep(pattern = "^RP[SL][[:digit:]]", x = rownames(x = hippocampus), value = TRUE);
+percent.ribo <- Matrix::colSums(x = GetAssayData(object = hippocampus, slot = 'counts')[ribo.genes, ]) / Matrix::colSums(x = GetAssayData(object = hippocampus, slot = 'counts'));
+hippocampus[['percent.ribo']] <- percent.ribo;
+
+
+s.genes <- cc.genes$s.genes
+g2m.genes <- cc.genes$g2m.genes
+hippocampus <- CellCycleScoring(hippocampus, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+
+saveRDS(hippocampus, file = "Merged_seurat_objects_Hannelore_Placebo_ Erythropoeitin_ samples.rds", hippocampus_file_name, ".rds")
+
+
+# These following commands are to check if data needs to be subset , we will store it for now and use it later
+min <- min(hippocampus@meta.data$nFeature_RNA);
+m <- median(hippocampus@meta.data$nFeature_RNA)
+max <- max(hippocampus@meta.data$nFeature_RNA)    
+s <- sd(hippocampus@meta.data$nFeature_RNA)
+min1 <- min(hippocampus@meta.data$nCount_RNA)
+max1 <- max(hippocampus@meta.data$nCount_RNA)
+m1 <- mean(hippocampus@meta.data$nCount_RNA)
+s1 <- sd(hippocampus@meta.data$nCount_RNA)
+quant_95_counts <- quantile(hippocampus@meta.data$nCount_RNA, 0.95) # calculate value in the 95th percentile
+print(paste("Feature stats:",min,m,max,s));
+print(paste("UMI stats:",min1,m1,max1,s1,Count93));
+
 
 library(Matrix)
 library(fields)
@@ -17,6 +88,7 @@ library(parallel)
 library(DoubletFinder)
 library(remotes)
 
+EPO_PLAcebo_probably_contains_doublets <- readRDS("Merged_seurat_objects_Hannelore_Placebo_ Erythropoeitin_ samples.rds")
 sweep.res.list_EPO_Placebo <- paramSweep_v3(EPO_PLAcebo_probably_contains_doublets, PCs = 1:10, sct = FALSE)
 sweep.stats_EPO_Placebo <- summarizeSweep(sweep.res.list_EPO_Placebo, GT = FALSE)
 bcmvn_EPO_Placebo <- find.pK(sweep.stats_EPO_Placebo)
