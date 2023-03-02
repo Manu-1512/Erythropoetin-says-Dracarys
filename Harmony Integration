@@ -1,3 +1,16 @@
 # Author : Manu
 #date: 26/10/22
 #Underprep
+
+
+library(Seurat)
+
+EPO_Placebo_seurat_object_normalized <- NormalizeData(EPO_Placebo_seurat_object) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA(verbose = FALSE)
+
+library(harmony)
+
+
+EPO_Placebo_seurat_object_harmonized <- RunHarmony(EPO_Placebo_seurat_object_normalized, group.by.vars = "orig.ident")
+EPO_Placebo_seurat_object_harmonized <- FindNeighbors(EPO_Placebo_seurat_object_harmonized, reduction = "harmony", dims = 1:15)
+EPO_Placebo_seurat_object_harmonized <- FindClusters(object = EPO_Placebo_seurat_object_harmonized, resolution = 0.5, graph.name="RNA_snn")
+EPO_Placebo_seurat_object_harmonized <- RunUMAP(EPO_Placebo_seurat_object_harmonized, reduction = "harmony", dims = 1:15)
