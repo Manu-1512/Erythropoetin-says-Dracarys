@@ -1,0 +1,43 @@
+library(SeuratWrappers)
+library(ggplot2)
+library(patchwork)
+l
+library("Seurat")
+library("BiocFileCache")
+
+library(Matrix)
+library(fields)
+install.packages("fields")
+library(fields)
+library(KernSmooth)
+library(ROCR)
+library(parallel)
+
+
+library(DoubletFinder)
+library(remotes)
+
+sweep.res.list_EPO_Placebo <- paramSweep_v3(EPO_PLAcebo_probably_contains_doublets, PCs = 1:10, sct = FALSE)
+sweep.stats_EPO_Placebo <- summarizeSweep(sweep.res.list_EPO_Placebo, GT = FALSE)
+bcmvn_EPO_Placebo <- find.pK(sweep.stats_EPO_Placebo)
+dev.off()
+head(EPO_PLAcebo_probably_contains_doublets@meta.data$ClusteringResults)
+annotations <- EPO_PLAcebo_probably_contains_doublets@meta.data$ClusteringResults
+homotypic.prop <- modelHomotypic(annotations)   
+nExp_poi <- round(0.075*nrow(EPO_PLAcebo_probably_contains_doublets@meta.data))
+nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
+EPO_PLAcebo_probably_contains_doublets <- doubletFinder_v3(EPO_PLAcebo_probably_contains_doublets, PCs = 1:10, pN = 0.25, pK = 0.09, nExp = nExp_poi, reuse.pANN = FALSE, sct = FALSE)
+EPO_PLAcebo_probably_contains_doublets <- doubletFinder_v3(EPO_PLAcebo_probably_contains_doublets, PCs = 1:10, pN = 0.25, pK = 0.09, nExp = nExp_poi.adj, reuse.pANN = "pANN_0.25_0.09_913", sct = FALSE)
+head(EPO_PLAcebo_probably_contains_doublets@meta.data$DF.classifications_0.25_0.09_899)
+Idents(EPO_PLAcebo_probably_contains_doublets) <- EPO_PLAcebo_probably_contains_doublets@meta.data$DF.classifications_0.25_0.09_899
+DimPlot(EPO_PLAcebo_probably_contains_doublets, reduction = "umap", pt.size=1)
+dev.off()
+Idents(EPO_PLAcebo_probably_contains_doublets) <- EPO_PLAcebo_probably_contains_doublets@meta.data$celltypes
+DimPlot(EPO_PLAcebo_probably_contains_doublets, reduction = "umap", pt.size=1)
+dev.off()
+EPO_PLAcebo_without_doublets = PO_PLAcebo_probably_contains_doublets[, PO_PLAcebo_probably_contains_doublets@meta.data[, DF.name] == "Singlet"]
+
+EPO_PLAcebo_cc <- CellCycleScoring(EPO_PLAcebo_without_doublets, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+png("Ridge_Cell_cycle_genes_E4_E5_filtered_cells.png",  width = 12.7, height = 14.8, units = "cm", res = 600, pointsize = 12)
+RidgePlot(EPO_PLAcebo_cc, features = c("PCNA", "TOP2A", "MCM6", "MKI67"), ncol = 2)
+dev.off()
