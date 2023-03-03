@@ -1,0 +1,79 @@
+prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+proportion <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+write.table(proportion, "Proportion_celltypes_Pyramidal_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+
+
+
+levels(Placebo_Erythropoeitin_harmonised_data)
+head(Placebo_Erythropoeitin_harmonised_data$celltypeCondition)
+head(Placebo_Erythropoeitin_harmonised_data$celltypes)
+levels(Placebo_Erythropoeitin_harmonised_data$celltypes)
+Placebo_Erythropoeitin_harmonised_data$broad_celltypes <- Idents(Placebo_Erythropoeitin_harmonised_data)
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltypes
+
+ 
+ 
+ names(new.cluster.ids) <- levels(Placebo_Erythropoeitin_harmonised_data)
+ Placebo_Erythropoeitin_harmonised_data <- RenameIdents(Placebo_Erythropoeitin_harmonised_data, new.cluster.ids)
+ levels(Placebo_Erythropoeitin_harmonised_data)
+proportion <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+write.table(proportion, "Proportion_celltypes_Pyramidal_across_samples_V2.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltypes
+new.cluster.ids <- c("CA1", "CA1_superficial", "CA1_retroHippo", "CA1_Newly_formed",  "CA2", 
+                     "CA3", "CA3", "CA3", "CA3_Newly_formed", "Newly_formed_migrating",
+                     "Newly_formed_migrating", "Newly_formed_migrating", "Newly_formed_migrating", "Newly_formed_migrating", "Newly_formed_Foxp2",
+                     "Others", "Granule", "Others", "Others", "Others", "Others")
+ 
+ 
+ names(new.cluster.ids) <- levels(Placebo_Erythropoeitin_harmonised_data)
+ Placebo_Erythropoeitin_harmonised_data <- RenameIdents(Placebo_Erythropoeitin_harmonised_data, new.cluster.ids)
+ levels(Placebo_Erythropoeitin_harmonised_data)
+
+
+my_col <- c("maroon", "plum4", "coral", 
+            "orange", "royalblue3", "darkorchid", 
+            "gold", "darkturquoise", "black",
+               "rosybrown1","seagreen")
+               
+               
+png("Harmonised_New_lineages_Only_Pyra_UMAP_broad_celltypes.png",  width = 34.8, height = 22.8, units = "cm", res = 600, pointsize = 12)
+  DimPlot(Placebo_Erythropoeitin_harmonised_data, reduction="umap", cols= my_col, pt.size=0.5)
+dev.off()
+levels(Placebo_Erythropoeitin_harmonised_data)
+proportion <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+
+dat <- proportion
+dat <- dat[,c(1:6,10,11,12,7,8,9)]
+png("Proportion_Pyramidal_subtypes_EPO_PL_samples_V2.png",  width = 16.7, height = 18.8, units = "cm", res = 600, pointsize = 12)
+barplot(as.matrix(dat), las=2, col=my_col, space=0.01)
+dev.off()   
+
+
+Placebo_Erythropoeitin_harmonised_data$broad_celltypes <- Idents(Placebo_Erythropoeitin_harmonised_data)
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltypes
+proportion <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+
+la <- as.numeric(proportion[10,])
+
+wilcox.test(la[c(1,2,3,4,6)], la[c(7,8,10,11,12)])
+math =read.table("http://www.utstat.toronto.edu/~brunner/312f12/code_n_data/mathcat.data")
+head(proportion)
+prop.type <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$type), margin = 2)
+prop.type
+head(table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$type), margin = 2))
+head(table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$type))
+)
+apply(prop.type, 2, sum)
+dim(Placebo_Erythropoeitin_harmonised_data)
+dim(Placebo_Erythropoeitin_harmonised_data$type=="B_samples")
+head(Placebo_Erythropoeitin_harmonised_data$type)
+dim(Placebo_Erythropoeitin_harmonised_data$type=="B_Samples")
+length(Placebo_Erythropoeitin_harmonised_data$type=="B_Samples")
+length(Placebo_Erythropoeitin_harmonised_data$type=="A_Samples")
+table(Placebo_Erythropoeitin_harmonised_data$celltype)
+head(Placebo_Erythropoeitin_harmonised_data$celltypeCondition)
+table(Placebo_Erythropoeitin_harmonised_data$celltypeCondition))
+
+fisher.test(df, alternative="two.sided", simulate.p.value=T)
+savehistory("modifying_figures_Pyramidal.Rhistory")
