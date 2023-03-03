@@ -1,0 +1,188 @@
+
+Placebo_Erythropoeitin_harmonised_data$celltypeCondition <- (paste(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data@meta.data$type, sep="_"))
+
+Placebo_Erythropoeitin_harmonised_data$celltypes <- Idents(Placebo_Erythropoeitin_harmonised_data)
+
+Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample <- (paste(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data@meta.data$orig.ident, sep="_"))
+
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample
+levels(Placebo_Erythropoeitin_harmonised_data)
+
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data)
+dim(dat)
+head(dat)
+dat <- as.data.frame(AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data))
+dat <- as.matrix(AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data))
+dim(dat)
+head(dat)
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data)
+dat.sct <- dat[["SCT"]]
+head(dat.sct)
+dat.rna <- dat[["RNA"]]
+head(dat.rna)
+head(Idents(Placebo_Erythropoeitin_harmonised_data))
+
+
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data, group.by=Idents(Placebo_Erythropoeitin_harmonised_data))
+head(Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample)
+Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample <- gsub("_B12", "_B11", Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample)
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data, group.by=Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample)
+Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample <- Idents(Placebo_Erythropoeitin_harmonised_data)
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data, group.by=Idents(Placebo_Erythropoeitin_harmonised_data))
+
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltype_per_Sample
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltypes
+prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+
+
+ct.smpl.prp <- prop.table(table(Idents(Placebo_Erythropoeitin_harmonised_data), Placebo_Erythropoeitin_harmonised_data$orig.ident), margin = 2)*100
+ct.smpl.prp[10,]
+ct.smpl.prp[11,]
+
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$orig.ident
+levels(Placebo_Erythropoeitin_harmonised_data)
+Placebo_Erythropoeitin_harmonised_data_s1 <- subset(Placebo_Erythropoeitin_harmonised_data, idents = c("A1", "A2", "A3", "A4", "A6","B7", "B8", "B9", "B10", "B11"))
+
+
+levels(Placebo_Erythropoeitin_harmonised_data_s1)
+Idents(Placebo_Erythropoeitin_harmonised_data_s1) <- Placebo_Erythropoeitin_harmonised_data_s1$celltypes
+levels(Placebo_Erythropoeitin_harmonised_data_s1)
+Placebo_Erythropoeitin_harmonised_data_s1 <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA1_dorsal", "CA1_superficial", "CA1_Retrohippo", "New_born_CA1_deep_firing", "CA2", "CA3_dorsal","deep_layer_thin-CA3", "New_born_Ventral_CA3_serotonin", "New_born_CA3_superficial_Mbp", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5", "New_born_migrating-deep_Sox5", "Ventral_CA1_migrating"))
+)
+Idents(Placebo_Erythropoeitin_harmonised_data_s1)
+levels(Placebo_Erythropoeitin_harmonised_data_s1)
+head(Placebo_Erythropoeitin_harmonised_data_s1$celltype_per_Sample)
+
+
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data, group.by=Placebo_Erythropoeitin_harmonised_data_s1$celltype_per_Sample)
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_s1, group.by=Placebo_Erythropoeitin_harmonised_data_s1$celltype_per_Sample)
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_s1)
+dat.rna <- dat[["RNA"]]
+head(dat.rna)
+dim(dat.rna)
+head(Idents(Placebo_Erythropoeitin_harmonised_data_s1))
+Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA1_dorsal"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+head(dat.rna)
+dat.sct <- dat[["SCT"]]
+head(dat.sct)
+dim(dat.sct)
+dim(dat.rna)
+
+
+
+write.table(dat.rna, "CA1_dorsal_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "CA1_dorsal_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+history()
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA1_superficial"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "CA1_superficial_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "CA1_superficial_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA1_Retrohippo"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "CA1_Retrohippo_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "CA1_Retrohippo_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_CA1_deep_firing"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_CA1_deep_firing_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_CA1_deep_firing_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+  Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA2"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "CA2_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "CA2_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("CA3_dorsal"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "CA3_dorsal_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "CA3_dorsal_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("deep_layer_thin-CA3"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "deep_layer_thin-CA3_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "deep_layer_thin-CA3_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_Ventral_CA3_serotonin"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_Ventral_CA3_serotonin_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_Ventral_CA3_serotonin_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_CA3_superficial_Mbp"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_CA3_superficial_Mbp_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_CA3_superficial_Mbp_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_migrating_superficial"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_migrating_superficial_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_migrating_superficial_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_migrating_serotonin_firing"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_migrating_serotonin_firing_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_migrating_serotonin_firing_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_migrating_serotonin_firing_Sox5"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_migrating_serotonin_firing_Sox5_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_migrating_serotonin_firing_Sox5_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+levels(Placebo_Erythropoeitin_harmonised_data_s1)
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_migrating_superficial_Sox5"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_migrating_superficial_Sox5_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_migrating_superficial_Sox5_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("New_born_migrating-deep_Sox5"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "New_born_migrating-deep_Sox5_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "New_born_migrating-deep_Sox5_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+ 
+ Placebo_Erythropoeitin_harmonised_data_sub <- subset(Placebo_Erythropoeitin_harmonised_data_s1, idents = c("Ventral_CA1_migrating"))
+ 
+dat <- AggregateExpression(object = Placebo_Erythropoeitin_harmonised_data_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "Ventral_CA1_migrating_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "Ventral_CA1_migrating_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+levels(Idents(Placebo_Erythropoeitin_harmonised_data))
+Idents(Placebo_Erythropoeitin_harmonised_data) <- Placebo_Erythropoeitin_harmonised_data$celltypes
