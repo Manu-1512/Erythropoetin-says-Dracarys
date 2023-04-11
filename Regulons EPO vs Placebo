@@ -1,0 +1,174 @@
+library(Seurat)
+library(GENIE3)
+library(SCENIC)
+library(doParallel)
+library(doRNG)
+set.seed(786)
+install.packages("remotes")
+remotes::install_github("aertslab/SCENIC")
+library(GENIE3)
+library(SCENIC)
+library(doParallel)
+library(doRNG)
+
+
+pbmc <- readRDS("newly_formed_3clusters.rds")
+dim(pbmc)
+BiocManager::install(c("doMC", "doRNG"))
+library(doRNG)
+library(scater) # load the library
+library(scran) # load the library
+
+
+
+pbmc <- SCTransform(pbmc)
+df <- GetAssayData(object = pbmc, slot = "data")
+my_genes <- VariableFeatures(pbmc)
+df <- as.matrix(df)
+
+df <- df[which(row.names(df) %in% my_genes),]
+
+raw_counts_filt <- as.matrix(df)
+
+
+
+weightMatrix <- GENIE3(raw_counts_filt, nCores=64)
+
+save(weightMatrix, file="GENIE_weight_matrix.RData")
+
+dim(weightMatrix) # checking the matrix dimensions
+
+linkList <- getLinkList(weightMatrix, threshold=0.01) 
+
+colnames(linkList) <- c("P1", "P2", "weight") # renaming the coloumns
+# order by weight
+linkList <- linkList[order(linkList[,"weight"], decreasing=TRUE),] 
+save(linkList, file="GENIE_linkList.RData")
+
+
+
+quantile(linkList$weight, probs=c(0.25, 0.75, 0.90)) # Just checking the distribution
+dim(linkList)
+head(linkList)
+png("linklist_GENEI3_weight.png",  width = 12.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+plot(linkList$weight, type="l", ylim=c(0, max(linkList$weight)), main="Weight of the links",
+     ylab="Weight", xlab="Links sorted decreasingly")
+abline(h=0.001, col="blue") # Threshold
+dev.off()
+
+
+sum(linkList$weight>0.01)/nrow(linkList) 
+linkList_001 <- linkList 
+colnames(linkList_001)[1:2] <- c("TF", "Target")
+tfModules <- list()
+
+
+linkList_001$TF <- as.character(linkList_001$TF)
+linkList_001$Target <- as.character(linkList_001$Target)
+  head(linkList_001)
+  
+  
+tfModules[["w001"]] <- split(linkList_001$Target, factor(linkList_001$TF))
+
+llminW <- linkList_001[which(linkList_001[,"weight"]>0.005),]
+
+tfModules[["w005"]] <- split(llminW$Target, factor(llminW$TF))
+ 
+tfModules[["top50"]] <- lapply(tfModules[["w005"]], function(x) x[1:(min(length(x), 50))])
+head(tfModules)
+tfModules_top50tragets <- (tfModules$top50)
+
+
+capture.output(print(tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 50)]), file = "tf_modules_top50Targets_minimum20Genes.txt")
+
+
+library(AUCell)
+library(doParallel)
+library(doRNG)
+library(reshape2)
+library(dplyr)
+set.seed(786)
+
+cells_rankings <- AUCell_buildRankings(raw_counts_filt)
+tfModules_top50tragetsFiltered <- tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 50)]
+cells_AUC <- AUCell_calcAUC(tfModules_top50tragetsFiltered, cells_rankings)
+cells_assignment <- AUCell.exploreThresholds(cells_AUC, plotHist=TRUE, assign=TRUE) 
+cells_assignment <- AUCell_exploreThresholds(cells_AUC, plotHist=TRUE, assign=TRUE) 
+cells_AUC <- AUCell_calcAUC(tfModules_top50tragetsFiltered, cells_rankings)
+head(cells_rankings)
+sum(linkList$weight>0.01)/nrow(linkList) 
+linkList_001 <- linkList 
+colnames(linkList_001)[1:2] <- c("TF", "Target")
+tfModules <- list()
+linkList_001$TF <- as.character(linkList_001$TF)
+linkList_001$Target <- as.character(linkList_001$Target)
+  head(linkList_001)
+tfModules[["w001"]] <- split(linkList_001$Target, factor(linkList_001$TF))
+llminW <- linkList_001[which(linkList_001[,"weight"]>0.005),]
+
+tfModules[["w005"]] <- split(llminW$Target, factor(llminW$TF))
+  
+tfModules[["top50"]] <- lapply(tfModules[["w005"]], function(x) x[1:(min(length(x), 50))])
+head(tfModules)
+
+
+tfModules_top50tragets <- (tfModules$top50)
+write.table(tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 20)], file="Placebo_tf_modules_top50Targets_minimum20Genes.txt")
+capture.output(print(tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 20)]), file = "Placebo_tf_modules_top50Targets_minimum20Genes.txt")
+
+
+
+
+library(AUCell)
+library(doParallel)
+library(doRNG)
+library(reshape2)
+library(dplyr)
+set.seed(786)
+
+cells_rankings <- AUCell_buildRankings(raw_counts_filt)
+
+tfModules_top50tragetsFiltered <- tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 20)]
+
+cells_assignment <- AUCell_exploreThresholds(cells_AUC, plotHist=TRUE, assign=TRUE) 
+
+cells_AUC <- AUCell_calcAUC(tfModules_top50tragetsFiltered, cells_rankings)
+
+auc_matrix <- as.matrix(cells_AUC@assays)
+class(cells_AUC@assays)
+row.names(cells_AUC)
+
+library(SCopeLoomR)
+tfModules_top50tragets[c("Arc", "Egr1")]
+
+tfModules_top50tragetsFiltered <- tfModules_top50tragets[which(lapply(tfModules_top50tragets, length) > 15)]
+
+cells_AUC <- AUCell_calcAUC(tfModules_top50tragetsFiltered, cells_rankings)
+
+head(tfModules_top50tragetsFiltered)
+
+
+
+
+pbmc@meta.data$treatment_celltypes <- paste(pbmc@meta.data$treatment, pbmc@meta.data$celltypes, sep="_")
+
+Idents(pbmc) <- pbmc@meta.data$treatment_celltypes
+
+
+cellInfo <- data.frame(seuratCluster=Idents(pbmc))
+head(cellInfo)
+head(cells_AUC)
+
+regulonActivity_byCellType <- sapply(split(rownames(cellInfo), cellInfo$seuratCluster),
+                                     function(cells) rowMeans(getAUC(cells_AUC)[,cells]))
+head(regulonActivity_byCellType)
+regulonActivity_byCellType_Scaled <- t(scale(t(regulonActivity_byCellType), center = T, scale=T))
+
+as.matrix(regulonActivity_byCellType_Scaled)
+
+topRegulators <- reshape2::melt(regulonActivity_byCellType_Scaled)
+colnames(topRegulators) <- c("Regulon", "CellType", "RelativeActivity")
+topRegulators <- topRegulators[which(topRegulators$RelativeActivity>0),]
+topRegulators
+viewTable(topRegulators)
+savehistory("SCENIC_all_three_new_lineages_regulons.Rhistory")
