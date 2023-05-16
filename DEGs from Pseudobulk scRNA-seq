@@ -1,0 +1,213 @@
+#### snRNAseq analysis through Seurat for Singh et al ####
+## Pseudobulk DGE
+## Heatmap plotting
+
+#### Loading initial Seurat file ####
+## Also loading libraries and setting seed
+readRDS("EPO_snRNAseq_processed_integ_RNA_run2.rds") -> EPOsnRNA
+library(Seurat)
+library(ggplot2)
+library(plyr)
+library(car)
+library(SingleCellExperiment)
+library(edgeR)
+library(dplyr)
+library(Matrix.utils)
+library(stringr)
+library(purrr)
+library(magrittr)
+library(Matrix)
+library(reshape2)
+library(S4Vectors)
+library(tibble)
+set.seed(0)
+
+
+#### Loading already defined clusters ####
+## Annotations done through Harmony by Manvendra
+read.delim("Metadata_cluster_annotations_Pyramidal_neurons.tsv") -> manu_pyr
+row.names(EPOsnRNA@meta.data) -> EPOsnRNA@meta.data$cellnames
+merge(manu_pyr,EPOsnRNA@meta.data,by.x = 1,by.y = 50,all.x = T) -> comparison_manu_mine
+comparison_manu_mine[is.na(comparison_manu_mine$idents_defined),] -> not_matching
+table(not_matching$celltypes)
+merge(manu_pyr,EPOsnRNA@meta.data,by.x = 1,by.y = "row.names",all.x = F) -> comparison_manu_mine
+
+comparison_manu_mine[,c(1:30,41:60)] -> comparison_manu_mine
+comparison_manu_mine[grepl("New_born_migrating_superficial",comparison_manu_mine$celltypes),] -> interest_cluster
+table(interest_cluster$idents_defined)
+
+EPOsnRNA@meta.data$pyr_manu <- NA
+EPOsnRNA@meta.data$cellnames -> row.names(EPOsnRNA@meta.data)
+EPOsnRNA@meta.data[row.names(EPOsnRNA@meta.data) %in% comparison_manu_mine$X,51] <- T
+EPOsnRNA@meta.data[!row.names(EPOsnRNA@meta.data) %in% comparison_manu_mine$X,51] <- F
+merge(EPOsnRNA@meta.data,manu_pyr[,c(1,7:9)],by.x = 50,by.y = 1,all.x = T) -> EPOsnRNA@meta.data
+EPOsnRNA@meta.data$cellnames -> row.names(EPOsnRNA@meta.data)
+
+#### Run pseudobulk DE ####
+## edgeR LRT
+complete_table <- NULL
+
+for (i in unique(manu_pyr$celltypes)){
+  pyr <- subset(EPOsnRNA, celltypes == i)
+  AggregateExpression(pyr,return.seurat = T,group.by = "orig.ident") -> pyr_agg
+  counts <- pyr_agg@assays$RNA@counts
+  counts[,-c(5,9)] -> counts # removing A5 and B12 as discussed
+  group <- factor(c(2,2,2,2,2,1,1,1,1,1))
+  y <- DGEList(counts=counts,group=group)
+  keep <- filterByExpr(y)
+  y <- y[keep,,keep.lib.sizes=FALSE]
+  y <- calcNormFactors(y)
+  design <- model.matrix(~group)
+  y <- estimateDisp(y,design)
+  fit <- glmFit(y,design)
+  lrt <- glmLRT(fit,coef=2)
+  lrt$table -> table
+  row.names(table) -> table$gene
+  table$cluster <- i
+  write.table(table,paste("edgeR_LRT_",i,".txt",sep=""),quote = F,col.names = F,row.names = F,sep = "\t")
+  write.table(table[table$PValue <= 0.05,5],paste("DEGs_",i,".txt",sep=""),quote = F,col.names = F,row.names = F,sep = "\t")
+  write.table(table[table$logFC > 0 & table$PValue <= 0.05,5],paste("DEGs_",i,"_OE.txt",sep=""),quote = F,col.names = F,row.names = F,sep = "\t")
+  write.table(table[table$logFC < 0 & table$PValue <= 0.05,5],paste("DEGs_",i,"_UE.txt",sep=""),quote = F,col.names = F,row.names = F,sep = "\t")
+  rbind(complete_table,table) -> complete_table
+}
+rm(table,y,pyr,pyr_agg,lrt,fit,i,group,design,counts,keep)
+
+write.table(complete_table,"complete_DEGs.txt",sep = "\t",col.names = T,row.names = F)
+
+#### Heatmap ####
+## Plotting heatmaps and preparing files for plotting by Manvendra
+pyr <- subset(EPOsnRNA, celltypes == "CA1_superficial",)
+AggregateExpression(pyr,return.seurat = T,group.by = "orig.ident") -> pyr_agg
+pyr_agg$group <- c("Epo","Epo","Epo","Epo","Epo","Epo","Placebo","Placebo","Placebo",
+                   "Placebo","Placebo","Placebo")
+library(ggplot2)
+pyr_agg$orig.ident <- as.factor(c("A1","A2","A3","A4","A5","A6",
+                                  "B10","B11","B12","B7","B8","B9"))
+Idents(pyr_agg) <- "orig.ident"
+levels(pyr_agg$orig.ident) <- c("A1","A2","A3","A4","A5","A6",
+                                "B7","B8","B9","B10","B11","B12")
+DoHeatmap(pyr_agg,features = "Homer1",group.by = "group",label = F,draw.lines = T) + scale_fill_gradientn(colors = colorRampPalette(c("blue","white","red"))(256), na.value = "white")
+
+complete_table[complete_table$PValue <= 0.05,] -> complete_DEGs
+complete_DEGs[grepl("CA1_dorsal",complete_DEGs$cluster),] -> CA1_dorsal
+complete_DEGs[grepl("CA1_superficial",complete_DEGs$cluster),] -> CA1_superficial
+
+genes_superficial <- c("Itgav","Arc","Ldlr","Bdnf","Cacng3","Cacnb1","Cntn5","Abi1","Tbr1","Atp2b2","Cacnb2","Ephb2")
+DoHeatmap(pyr_agg,features = genes_superficial,group.by = "group",label = F,draw.lines = T) + scale_fill_gradientn(colors = colorRampPalette(c("blue","white","red"))(256), na.value = "white")
+
+pyr <- subset(EPOsnRNA, celltypes == "CA1_dorsal")
+AggregateExpression(pyr,return.seurat = T,group.by = "orig.ident") -> pyr_CA1dorsal
+pyr_CA1dorsal$group <- c("Epo","Epo","Epo","Epo","Epo","Epo","Placebo","Placebo","Placebo",
+                         "Placebo","Placebo","Placebo")
+pyr_CA1dorsal$orig.ident <- as.factor(c("A1","A2","A3","A4","A5","A6",
+                                        "B10","B11","B12","B7","B8","B9"))
+Idents(pyr_CA1dorsal) <- "orig.ident"
+levels(pyr_CA1dorsal$orig.ident) <- c("A1","A2","A3","A4","A5","A6",
+                                      "B7","B8","B9","B10","B11","B12")
+genes_dorsal <- c("Rgs4","Rab9","Ldlr","Mtcp1","Htr2c","Homer1","C1ql3","Zbtb18","Slc19a2","Neurod6")
+DoHeatmap(pyr_CA1dorsal,features = genes_dorsal,group.by = "group",label = F,draw.lines = T) + scale_fill_gradientn(colors = colorRampPalette(c("blue","white","red"))(256), na.value = "white")
+
+pyr_CA1dorsal@assays$RNA@data -> data_by_row
+as.data.frame(data_by_row) -> data_by_row
+data_by_row[,c(1:6,10:12,7:9)] -> data_by_row
+
+data_by_row_new<-as.data.frame(t(apply(data_by_row,1, function(x) x/mean(x))))
+write.table(data_by_row_new,"expression_scaled_row_ca1_dorsal.txt",sep = "\t",col.names = T,row.names = T,quote = F)
+
+pyr_agg@assays$RNA@data -> data_by_row_sup
+as.data.frame(data_by_row_sup) -> data_by_row_sup
+data_by_row_sup[,c(1:6,10:12,7:9)] -> data_by_row_sup
+
+data_by_row_new_sup<-as.data.frame(t(apply(data_by_row_sup,1, function(x) x/mean(x))))
+write.table(data_by_row_new_sup,"expression_scaled_row_ca1_superficial.txt",sep = "\t",col.names = T,row.names = T,quote = F)
+
+#### Clustering based on expression ####
+read.delim("~/phenoData_monocle3.txt") -> pheno_monocle3
+complete_table[complete_table$cluster %in% pheno_monocle3$celltypes,] -> CA1_table
+CA1_table[CA1_table$PValue > 0.05,1] <- NA
+CA1_table_filtered <- NULL
+for (i in unique(CA1_table$gene)){
+  CA1_table[CA1_table$gene == i,] -> hold_gene
+  if(sum(is.na(hold_gene$logFC)) < 6){
+    rbind(CA1_table_filtered,hold_gene) -> CA1_table_filtered
+  }
+}
+
+as.data.frame(unique(CA1_table_filtered$cluster)) -> clusters_merge
+
+for (i in unique(CA1_table_filtered$gene)){
+  CA1_table_filtered[CA1_table_filtered$gene == i,] -> hold_gene
+  colnames(hold_gene)[1] <- i
+  merge(clusters_merge,hold_gene[,c(1,6)],by.x = 1, by.y = 2,all.x = T) -> clusters_merge
+}
+
+clusters_merge[is.na(clusters_merge)] <- 0
+row.names(clusters_merge) <- clusters_merge[,1]
+clusters_merge[,-1] -> clusters_merge
+t(clusters_merge) -> clusters_merge
+clusters_merge <- clusters_merge[apply(clusters_merge, 1, function(row){any(row < -1 | row > 1)}),]
+
+hclust(as.dist(clusters_merge),method = "complete") -> cluster_object
+hclust(clusters_merge,method = "complete") -> cluster_object
+plot(cluster_object)
+
+library(ComplexHeatmap)
+#as.matrix(clusters_merge) -> clusters_merge
+Heatmap(t(clusters_merge))
+Heatmap(clusters_merge, column_dend_reorder = c("New_born_migrating_superficial","New_born_migrating_superficial_Sox5",
+                                                "New_born_migrating_serotonin_firing","Ventral_CA1_migrating",
+                                                "CA1_superficial","CA1_dorsal"),cluster_row_slices = F)
+
+
+library(ComplexHeatmap)
+library(circlize)
+library(colorspace)
+library(GetoptLong)
+
+mat <- as.matrix(clusters_merge)
+
+ha_mix_top = HeatmapAnnotation(violin = anno_density(mat, type = "violin", gp = gpar(fill = rep("grey", 93))))  
+
+png("Epo_heatmap_negative_vs_Positive_reordered.png",  width = 16.7, height = 22.8, units = "cm", res = 300, pointsize = 12)
+#rownames(mat) <- c("CA1_dorsal","CA1_superficial","NF_M_SeroF","NF_M_Sup","NF_M_Sup_Sox5","Ventral_CA1_migrating")
+Heatmap(t(mat),
+        name = "Log2 Foldchange",
+        col = colorRamp2(c(-2, -1, 0, 1, 2), c("blue", "purple", "grey87", "red", "darkred")),
+        #                         use_raster = TRUE, raster_resize=T,
+        row_names_gp = gpar(fontsize = 0.0000001),
+        cluster_column=F, cluster_column_slices = FALSE,
+        km = 4, column_order = c("NF_M_Sup_Sox5","NF_M_Sup",
+                                 "NF_M_SeroF","Ventral_CA1_migrating",
+                                 "CA1_superficial","CA1_dorsal"))#, top_annotation = ha_mix_top)
+dev.off()
+
+
+data = (complete_table[complete_table$cluster == "New_born_migrating_superficial",])
+
+attach(data)
+
+png("DEGs_EPO_PLO_CA1_Nf_M_S.png",  width = 14.8, height = 16.8, units = "cm", res = 600, pointsize = 12)
+par(mar=c(5, 5, 2, 2))
+with(data, plot(logFC, -log10(PValue), pch=20, main="", col="orange"))
+with(subset(data, -log10(PValue) < 1.30), points(logFC, -log10(PValue), pch=20, col="gray"))
+with(subset(data, logFC > 0.50 &  -log10(PValue) > 1.30), points(logFC, -log10(PValue), pch=20, col="red2"))
+with(subset(data, logFC < -0.50 &  -log10(PValue) > 1.30), points(logFC, -log10(PValue), pch=20, col="steelblue2"))
+abline(h = 1.30, col = "black", lty = 2, lwd = 1)
+abline(v = c(-0.5,0.5), col = "black", lty = 2, lwd = 1)
+dev.off()
+
+for (i in unique(manu_pyr$celltypes)){
+  data = (complete_table[complete_table$cluster == i,])
+  
+  attach(data)
+  
+  png(paste("DEGs_EPO_PLO_",i,".png"),  width = 14.8, height = 16.8, units = "cm", res = 600, pointsize = 12)
+  par(mar=c(5, 5, 2, 2))
+  with(data, plot(logFC, -log10(PValue), pch=20, main="", col="orange"))
+  with(subset(data, -log10(PValue) < 1.30), points(logFC, -log10(PValue), pch=20, col="gray"))
+  with(subset(data, logFC > 0.50 &  -log10(PValue) > 1.30), points(logFC, -log10(PValue), pch=20, col="red2"))
+  with(subset(data, logFC < -0.50 &  -log10(PValue) > 1.30), points(logFC, -log10(PValue), pch=20, col="steelblue2"))
+  abline(h = 1.30, col = "black", lty = 2, lwd = 2)
+  abline(v = c(-0.5,0.5), col = "black", lty = 2, lwd = 2)
+  dev.off()
+}
