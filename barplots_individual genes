@@ -1,5 +1,20 @@
 ####################### This is a code used for all independent lineages to construct the Supplementary Figure 9
 ############### Here, it is showing how we got to the CA3, CA2
+ data_summary
+function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE)/sqrt(length(x[[col]])))
+  }
+data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+ return(data_sum)
+}
+library(ggplot2)
+library(reshape2)
+library(scales)
 
 
 nfms <- read.delim("CA3_dorsal_sct_Aggregate_expression_across_samples.tsv", row.names=1, header=T)
