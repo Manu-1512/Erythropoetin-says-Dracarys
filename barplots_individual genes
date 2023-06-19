@@ -1,0 +1,246 @@
+####################### This is a code used for all independent lineages to construct the Supplementary Figure 9
+############### Here, it is showing how we got to the CA3, CA2
+
+
+nfms <- read.delim("CA3_dorsal_sct_Aggregate_expression_across_samples.tsv", row.names=1, header=T)
+candis <- nfms[grep("Egr1|Egr3|Bdnf|Homer1|Nr4a1|Etv5|Per1|Rcan2|Sytl2", row.names(nfms)),]
+candis <- candis[,c(2,4,5,7,8,9)]
+candis
+######## Bdnf
+df <- melt(candis[1,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Bdnf_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+
+
+
+############ Sytl2
+df <- melt(candis[2,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Sytl2_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+##Per1
+df <- melt(candis[3,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Per1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+### Homer1
+df <- melt(candis[4,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Homer1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+##### Egr3
+df <- melt(candis[5,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Egr3_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+####### Nr4a1
+df <- melt(candis[6,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Nr4a1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+########## Etv5
+df <- melt(candis[7,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Etv5_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+############ Egr1
+df <- melt(candis[9,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA3_Egr1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+
+
+
+
+
+########################################### CA2 lineage
+nfms <- read.delim("CA2_sct_Aggregate_expression_across_samples.tsv", row.names=1, header=T)
+candis <- nfms[grep("Egr1|Egr3|Bdnf|Homer1|Nr4a1|Etv5|Per1|Rcan2|Sytl2", row.names(nfms)),]
+candis <- candis[,c(2,4,5,7,8,9)]
+candis
+############ Bdnf
+df <- melt(candis[1,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Bdnf_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+############ Sytl2
+df <- melt(candis[2,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Sytl2_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+##Per1
+df <- melt(candis[3,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Per1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+### Homer1
+df <- melt(candis[4,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Homer1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+##### Egr3
+df <- melt(candis[5,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Egr3_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+####### Nr4a1
+df <- melt(candis[6,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Nr4a1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+########## Etv5
+df <- melt(candis[7,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Etv5_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+############ Egr1
+df <- melt(candis[9,])
+df
+df$variable <- as.character(c(rep("rEPO", 3), rep("Plasebo", 3)))
+t.test(df[1:3,2], df[4:6,2])
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("slateblue", "tomato" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+ png("barplot_CA2_Egr1_expression_EPO_PLasebo.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+
