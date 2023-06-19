@@ -1,0 +1,187 @@
+
+
+harmony_normalized_all_data_EPO <- readRDS("harmony_normalized_all_data_EPO.rds")
+
+harmony_normalized_all_data_EPO <- FindNeighbors(object = harmony_normalized_all_data_EPO, dims=1:30)
+harmony_normalized_all_data_EPO <- FindClusters(object = harmony_normalized_all_data_EPO, resolution = 0.6)
+harmony_normalized_all_data_EPO <- RunUMAP(harmony_normalized_all_data_EPO, dims = 1:30)
+png("harmony_EPO_PLO_UMAP_V2.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, reduction = "umap",pt.size=0.3, label=T)
+dev.off()
+
+
+
+harmony_normalized_all_data_EPO@misc$markers43 <- FindAllMarkers(harmony_normalized_all_data_EPO, only.pos = TRUE, min.pct = 0.35, logfc.threshold = 0.35)
+
+
+new.cluster.ids <- c("Interneurons_claustrum", "Pyr_CA1", "Mature Oligodendrocytes (MOL)", "Astrocytes", "GABA", "Pyr_Unch", "Pyr_CA3", "Pyr_Unch", "Pyr_Retrohippocampus", 
+"Pyr_Foxp2_type2", "Oligo from microglia", "Pyr_CA3", "OPC", "Pyr_Unch_Migrating", "GABA", "Pyr_Unch", "Pyr_Unch", "Microglia", "Newly myelinated", "GABA", 
+"Pyr_CA3", "OPC_Astrocyte", "Pyr_CA2", "GABA", "MFOL_astrocyte", "Progenitor_Intermediate", "MFOL_interneurons", "OPC_Pyr_L6b", "Endothelial", "Pyr_Unch", 
+"MFOL", "Astrocyte1", "committed oligodendrocyte precursors (COP)", "Astrocyte2-OPC-interneuron", "ependymal", "GABA", "Cd274_positive", "Pyr_Foxp2_type1", 
+"Pericyte ", "GABA", "Pyr_Unch", "ependymal")
+names(new.cluster.ids) <- levels(harmony_normalized_all_data_EPO)
+harmony_normalized_all_data_EPO <- RenameIdents(harmony_normalized_all_data_EPO, new.cluster.ids)
+levels(Idents(harmony_normalized_all_data_EPO))
+ my_level <- c("OPC", "OPC_Astrocyte", "OPC_Pyr_L6b","Astrocyte2-OPC-interneuron", "committed oligodendrocyte precursors (COP)",  "Mature Oligodendrocytes (MOL)", "MFOL", "MFOL_astrocyte" , "MFOL_interneurons", "Oligo from microglia",
+"Progenitor_Intermediate", "Interneurons_claustrum", "GABA" , "Pyr_CA1", "Newly myelinated", "Pyr_Retrohippocampus", "Pyr_Foxp2_type1", "Pyr_Foxp2_type2", "Pyr_Unch", "Pyr_Unch_Migrating",  "Pyr_CA2", "Pyr_CA3", 
+"Astrocytes", "Astrocyte1", "Microglia", "Endothelial", "Pericyte ", "ependymal", "Cd274_positive")
+ 
+Idents(harmony_normalized_all_data_EPO) <- factor(Idents(harmony_normalized_all_data_EPO), levels= my_level)
+levels(Idents(harmony_normalized_all_data_EPO))
+harmony_normalized_all_data_EPO@misc$celltypemarkers <- FindAllMarkers(harmony_normalized_all_data_EPO, only.pos = TRUE, min.pct = 0.35, logfc.threshold = 0.35)
+markers <- harmony_normalized_all_data_EPO@misc$celltypemarkers
+head(markers)
+tail(markers)
+levels(Idents(harmony_normalized_all_data_EPO))
+ png("harmony_normalized_samples_UMAP_annotated_celltypes_V1.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, reduction = "umap", cols=c("blue4", "darkcyan", "blueviolet", "darkslategray4",  "blue", "deepskyblue3",  "darkturquoise",                 #7
+                                         "aquamarine3", "darkslateblue", "deeppink", "azure4", "deeppink4", "darkorange", "red2", "brown2",              #15
+                                         "mediumvioletred", "gold", "darkgoldenrod3", "sienna3", "sienna", "palevioletred",  "magenta", "forestgreen",   # 23
+                                         "green", "olivedrab2", "thistle4", "thistle3", "tan", "darkkhaki"),                                              #27
+                                           pt.size=0.3) 
+       
+dev.off()
+ png("harmony_normalized_samples_UMAP_annotated_celltypes_V2.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, reduction = "umap", cols=c("darkslateblue", "darkcyan", "blueviolet", "darkslategray4",  "deepskyblue3", "blue",   "darkturquoise",                 #7
+                                         "yellow2", "skyblue4", "black", "azure4", "deeppink4", "darkorange", "red2", "brown2",              #15
+                                         "mediumvioletred", "yellow2", "gold", "darkmagenta", "salmon", "palevioletred",  "magenta", "forestgreen",   # 23
+                                         "green", "olivedrab2", "thistle4", "thistle3", "tan", "darkkhaki"),                                              #27
+                                           pt.size=0.3) 
+       
+dev.off()
+png("harmony_normalized_samples_UMAP_annotated_celltypes_V2.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, reduction = "umap", cols=c("darkslateblue", "darkcyan", "blueviolet", "darkslategray4",  "deepskyblue3", "blue",   "darkturquoise",                 #7
+                                         "yellow2", "skyblue4", "black", "azure4", "deeppink4", "darkorange", "red2", "mediumvioletred",              #15
+                                         "slateblue2", "yellow2", "gold", "darkmagenta", "salmon", "palevioletred",  "magenta", "forestgreen",   # 23
+                                         "green", "olivedrab2", "thistle4", "thistle3", "tan", "darkkhaki"),                                              #27
+                                           pt.size=0.3) 
+       
+dev.off()
+ png("harmony_normalized_samples_UMAP_annotated_celltypes_V2.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, reduction = "umap", cols=c("darkslateblue", "darkcyan", "blueviolet", "darkslategray4",  "deepskyblue3", "blue",   "darkturquoise",                 #7
+                                         "yellow2", "skyblue4", "black", "gold4", "deeppink4", "darkorange", "red2", "mediumvioletred",              #15
+                                         "slateblue2", "yellow2", "gold", "darkmagenta",  "palevioletred",  "thistle3", "bisque4", "forestgreen",   # 23
+                                         "green", "olivedrab2", "magenta", "salmon", "tan", "plum4"),                                              #27
+                                           pt.size=0.3) 
+       
+dev.off()
+savehistory("harmony_normalized_samples_UMAP_annotated_celltypes.Rhistory")
+
+######## Reannotating them into 10 major lineages and a Neuroiimune cells
+
+########## saving the previous image
+ 
+harmony_normalized_all_data_EPO <- readRDS("harmony_normalized_all_data_EPO.rds")
+ levels(harmony_normalized_all_data_EPO)
+ new.cluster.ids <- c(rep("Oligo", 10), "Intermediate", "Dendate_Gyrus", "Interneurons", rep("Pyramidal", 9),
+                    rep("Astrocytes", 2), "Microglia", "Endothelial", "Pericyte", "ependymal", "Cd274_Neuroimmune")
+
+ 
+  names(new.cluster.ids) <- levels(harmony_normalized_all_data_EPO)
+ harmony_normalized_all_data_EPO <- RenameIdents(harmony_normalized_all_data_EPO, new.cluster.ids)
+  levels(harmony_normalized_all_data_EPO)
+ 
+ table(Idents(harmony_normalized_all_data_EPO))
+ prop.table(table(Idents(harmony_normalized_all_data_EPO), harmony_normalized_all_data_EPO$type), margin = 2)
+ table(Idents(harmony_normalized_all_data_EPO), harmony_normalized_all_data_EPO$type)
+ apply(table(Idents(harmony_normalized_all_data_EPO), harmony_normalized_all_data_EPO$type), 2, sum)
+mark <-  FindAllMarkers(harmony_normalized_all_data_EPO, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5)
+
+
+
+p1 <- plot_density(harmony_normalized_all_data_EPO, "Nrgn", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p1 <- plot_density(pyra, "Dcx", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p2 <- plot_density(pyra, "Neurod6", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p3 <- plot_density(pyra, "Sox5", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p4 <- plot_density(pyra, "Foxp2", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+png("Pyramidal_New_Old_Neurons_Dcx_Foxp2_Sox5_Neurod6.png",  width = 28.7, height = 28.8, units = "cm", res = 600, pointsize = 12)
+p1 + p2 + p3 +p4
+dev.off()
+
+
+
+p1 <- plot_density(harmony_normalized_all_data_EPO, "Rfx3", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p2 <- plot_density(harmony_normalized_all_data_EPO, "Prox1", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p3 <- plot_density(harmony_normalized_all_data_EPO, "Gad1", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+p4 <- plot_density(harmony_normalized_all_data_EPO, "Gad2", reduction="umap", size=0.6) + scale_color_viridis_c(option="inferno", direction=-1)
+
+png("DimPlot_UMAP_10_lineages_all_data_combined.png",  width = 22.7, height = 16.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(harmony_normalized_all_data_EPO, cols=c("maroon","midnightblue","turquoise", "gold","darkcyan",  "blue2","darkorange","deepskyblue","purple","red","green"))
+dev.off()
+
+sample_proportion <- prop.table(table(Idents(harmony_normalized_all_data_EPO), harmony_normalized_all_data_EPO$orig.ident), margin = 2)
+
+ png("Proportion_all_EPO_PL_samples_ten_lineages_V2.png",  width = 16.7, height = 18.8, units = "cm", res = 600, pointsize = 12)
+barplot(as.matrix(dat), las=2, col=my_col, space=0.02)
+dev.off()
+write.table(condition, "Proportion_all_EPO_PL_conditions_ten_lineages_V2.tsv", col.names=NA, row.names=T, quote=F, sep="\t")
+write.table(condition_proportion, "Proportion_all_EPO_PL_conditions_ten_lineages_V2.tsv", col.names=NA, row.names=T, quote=F, sep="\t")
+
+dat <- sample_proportion
+dat <- dat[,c(1:6,10,11,12,7,8,9)]
+
+my_col =c("maroon","midnightblue","turquoise", "gold","darkcyan","blue2","darkorange","deepskyblue","purple","red","green")
+png("Proportion_all_EPO_PL_samples_ten_lineages.png",  width = 16.7, height = 18.8, units = "cm", res = 600, pointsize = 12)
+barplot(as.matrix(dat), las=2, col=my_col, space=0.01)
+dev.off()   
+
+
+######################
+ harmony_normalized_all_data_EPO <- readRDS("harmony_normalized_all_data_EPO.rds")
+  png("harmony_normalized_samples_UMAP_29_celltypes_nolabel.png",  width = 38.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+ DimPlot(harmony_normalized_all_data_EPO)
+dev.off()
+
+harmony_normalized_all_data_EPO@meta.data$annotated_clusters <- Idents(harmony_normalized_all_data_EPO)
+ new.cluster.ids <- c(rep("Oligo", 10), "Intermediate", "Dendate_Gyrus", "Interneurons", rep("Pyramidal_CA1", 5), rep("Newly_formed", 2), "Pyramidal_CA2",  
+                         "Pyramidal_CA3",  rep("Astrocytes", 2), "Microglia", "Endothelial", "Pericyte", "ependymal", "Cd274_Neuroimmune")
+
+ names(new.cluster.ids) <- levels(harmony_normalized_all_data_EPO)
+ harmony_normalized_all_data_EPO <- RenameIdents(harmony_normalized_all_data_EPO, new.cluster.ids)
+ levels(harmony_normalized_all_data_EPO)
+
+png("DimPlot_UMAP_newlyformed_included_lineages_all_data_combined.png",  width = 22.7, height = 16.8, units = "cm", res = 600, pointsize = 12)
+ DimPlot(harmony_normalized_all_data_EPO, cols=c("maroon","midnightblue","turquoise", "gold","darkcyan", "yellowgreen",  "pink", "orange", "blue2","darkorange","deepskyblue","purple","red","green"))
+dev.off()
+
+
+harmony_normalized_all_data_EPO@misc$markers14 <- FindAllMarkers(harmony_normalized_all_data_EPO, only.pos = TRUE, min.pct = 0.45, logfc.threshold = 0.5)
+
+mark <-  harmony_normalized_all_data_EPO@misc$markers14
+write.table(mark, "Markers_14_cluster_newlyformed_all_data.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+
+png("VlnPlot_immune_response_EPO_Placebo_V2.png",  width = 36.7, height = 28.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Stat3", "Stat5a", "Stat1", "Tlr2", "Tlr4", "Tlr7", "Il1b", "Il7", "Tnf", "Nfkb1", "Isg15", "Isg20"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=2, col=c("slateblue", "tomato"))
+dev.off()
+
+
+png("VlnPlot_immune_response_STATs_EPO_Placebo_V2.png",  width = 36.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Stat3", "Stat5a", "Stat1"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=3, col=c("slateblue", "tomato"))
+dev.off()
+
+png("VlnPlot_immune_response_TLRs_EPO_Placebo_V2.png",  width = 36.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Tlr2", "Tlr4", "Tlr7"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=3, col=c("slateblue", "tomato"))
+dev.off()
+
+
+
+png("VlnPlot_immune_response_Nfkb_Tnfa_Nlrp_EPO_Placebo_V2.png",  width = 36.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(harmony_normalized_all_data_EPO, c("Tnf", "Nfkb1", "Nlrp2"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=3, col=c("slateblue", "tomato"))
+ dev.off()
+
+png("VlnPlot_immune_response_IL_ISGs_EPO_Placebo_V2.png",  width = 36.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Il1b", "Isg15", "Isg20"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=3, col=c("slateblue", "tomato"))
+dev.off()
+
+
+
+png("FeaturePlots_DEG_Viral_receptors.png",  width = 24.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("TMPRSS2", "DPP4", "ANPEP", "CEACAM1"), pt.size=0, split.by= "orig.ident", group.by="celltypes", ncol=2, col=c("gold", "midnightblue"))
+dev.off()
+png("VlnPlot_immune_response_EPO_Placebo.png",  width = 36.7, height = 28.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Stat3", "Stat5a", "Stat1", "Tlr2", "Tlr4", "Tlr7", "Il1b", "Il7", "Tnf", "Nfkb1", "Isg15", "Isg20"), pt.size=0, split.by= "type", group.by="ident", ncol=2, col=c("slateblue", "tomato"))
+dev.off()
+
+png("VlnPlot_immune_response_EPO_Placebo_V2.png",  width = 36.7, height = 28.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_all_data_EPO, c("Stat3", "Stat5a", "Stat1", "Tlr2", "Tlr4", "Tlr7", "Il1b", "Il7", "Tnf", "Nfkb1", "Isg15", "Isg20"), split.plot=T, pt.size=0, split.by= "type", group.by="celltype14", ncol=2, col=c("slateblue", "tomato"))
+dev.off()
