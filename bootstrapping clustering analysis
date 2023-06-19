@@ -1,0 +1,36 @@
+mat <- read.delim("CA1_dorsal_sct_Aggregate_expression_across_samples.tsv", stringsAsFactors=F, row.names=1)
+head(mat)
+dat <- AggregateExpression(object = pbmc)
+dat.sct <- dat[["SCT"]]
+
+dat <- log2(dat.sct+1)
+percentage<-c(0.90)
+ sds<-rowSds(dat)
+ sel<-(sds>quantile(sds,percentage))
+ set<-dat[sel, ]
+
+mean <- apply(set, 1, mean)
+library(genefilter)
+
+
+mat <- set-mean
+
+
+
+install.packages("pvclust")
+
+library(pvclust)
+
+
+
+pv.sample2 <- pvclust(scale(set), method.dist="correlation", method.hclust="complete", nboot=100) 
+
+
+
+png("bootstrapping_with_EPO_PL_pseudobulk.png",  width = 14.8, height = 16.8, units = "cm", res = 600, pointsize = 12)
+plot(pv.sample2, print.pv=TRUE, print.num=TRUE, float=0.01,   lwd=4,  cex.pv=0.8,  col="midnightblue", cex=1)
+dev.off()
+
+png("bootstrapping_with_EPO_PL_pseudobulk_V2.png",  width = 14.8, height = 18.8, units = "cm", res = 600, pointsize = 12)
+plot(pv.sample2, print.pv=TRUE, print.num=TRUE, float=0.01,   lwd=3,  cex.pv=0.8,  col="midnightblue", cex=0.5)
+dev.off()
