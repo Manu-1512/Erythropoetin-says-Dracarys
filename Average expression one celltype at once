@@ -1,0 +1,10 @@
+
+ pbmc_sub <- subset(pbmc_s1, idents = c("New_born_migrating_serotonin_firing_Sox5"))
+ 
+ pbmc_sub <- subset(pbmc_s1, idents = c("Ventral_CA1_migrating"))
+ 
+dat <- AggregateExpression(object = pbmc_sub)
+dat.rna <- dat[["RNA"]]
+dat.sct <- dat[["SCT"]]
+write.table(dat.rna, "Ventral_CA1_migrating_RNA_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
+write.table(dat.sct, "Ventral_CA1_migrating_sct_Aggregate_expression_across_samples.tsv", row.names=T, col.names=NA, sep="\t", quote=F)
