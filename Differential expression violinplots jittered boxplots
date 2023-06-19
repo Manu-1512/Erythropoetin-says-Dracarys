@@ -1,0 +1,140 @@
+#######
+
+proportion <- prop.table(table(Idents(pbmc), pbmc$orig.ident), margin = 2)*100
+
+ library(ggplot2)
+library(reshape2)
+library(scales)
+
+
+
+data_summary <- 
+function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE)/sqrt(length(x[[col]])))
+  }
+data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+ return(data_sum)
+}
+
+
+candi <- as.matrix(proportion)
+
+df <- melt(candi[13,])
+
+df$variable <- c(rep("Epo", 6), rep("Placebo", 6))
+
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+df2
+
+
+  p <- ggplot(df, aes(variable, value, color=variable))+ 
+  geom_boxplot(lwd=0.5, alpha=0.5, color=c("red2", "steelblue2" ), fill=c("red2", "steelblue2" ))+
+  geom_jitter(position=position_jitter(0.01),alpha=0.9, pch=19, size=4) + 
+   scale_color_manual(values=c("maroon", "midnightblue" )) +
+  guides(fill = FALSE, color = FALSE, linetype = FALSE, shape = FALSE) +
+  theme_classic()    
+  p+scale_color_manual(values=c("maroon", "midnightblue" )) + theme_minimal()
+dev.off()
+   
+   
+   png("boxplot_jitter_New_born_migrating-deep_Sox5_EPO_PL.png",  width = 12.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+   p+scale_color_manual(values=c("maroon", "midnightblue")) + theme_minimal()
+   dev.off()
+   
+   
+
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("red2", "steelblue2" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+p
+dev.off()
+              
+ png("barplot_New_born_migrating-deep_Sox5_EPO_PL.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+
+
+
+#p-value = 0.05714
+df <- df[c(1,2,3,4,6,7,8,10,11,12),]
+df2 <- data_summary(df, varname="value", groupnames=c("variable"))
+
+
+  p <- ggplot(df, aes(variable, value, color=variable))+ 
+  geom_boxplot(lwd=0.5, alpha=0.5, color=c("red2", "steelblue2" ), fill=c("red2", "steelblue2" ))+
+  geom_jitter(position=position_jitter(0.01),alpha=0.9, pch=19, size=4) + 
+   scale_color_manual(values=c("maroon", "midnightblue" )) +
+  guides(fill = FALSE, color = FALSE, linetype = FALSE, shape = FALSE) +
+  theme_classic()    
+  p+scale_color_manual(values=c("maroon", "midnightblue" )) + theme_minimal()
+dev.off()
+   
+   
+   png("OR_boxplot_jitterNew_born_migrating-deep_Sox5_EPO_PL.png",  width = 12.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+   p+scale_color_manual(values=c("maroon", "midnightblue")) + theme_minimal()
+   dev.off()
+   
+   
+
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("red2", "steelblue2" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+p
+dev.off()
+              
+ png("OR_barplot_New_born_migrating-deep_Sox5_EPO_PL.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+dev.off()
+
+
+
+
+######### "Cux1", "Cux2","Nrgn"
+
+
+VlnPlot(pbmc, c("Homer1"), ncol=2, col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE)
+
+
+p <- ggplot(df, aes(variable, value, color=variable))+ 
+  geom_boxplot(lwd=0.5, alpha=0.5, color=c("red2", "steelblue2" ), fill=c("red2", "steelblue2" ))+
+  geom_jitter(position=position_jitter(0.01),alpha=0.9, pch=19, size=4) + 
+  scale_color_manual(values=c("maroon", "midnightblue" )) +
+  guides(fill = FALSE, color = FALSE, linetype = FALSE, shape = FALSE) +
+  theme_classic()    
+  p+scale_color_manual(values=c("maroon", "midnightblue" )) + theme_minimal()
+  dev.off()
+  
+   png("boxplot_jitter_Granule_cells_EPO_PL.png",  width = 12.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+   p+scale_color_manual(values=c("maroon", "midnightblue")) + theme_minimal()
+   dev.off()
+   
+   
+p<- ggplot(df2, aes(x=variable, y=value, fill=sd)) + 
+  geom_bar(stat="identity", color="black",  fill= c("red2", "steelblue2" ),
+           alpha = 1,position=position_dodge()) +
+  geom_errorbar(aes(ymin=value-sd, ymax=value+sd), width=.3,
+                 position=position_dodge(.9)) + theme_classic()
+                 
+                 
+ png("barplot_Granule_cells_EPO_PL.png",  width = 9.7, height = 12.8, units = "cm", res = 600, pointsize = 12)
+p
+
+dev.off()
+
+
+##########
+
+
+
+ png("ViolinPlot_DEG_Nrgn_EPO_PLO.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(pbmc, c("Nrgn"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
