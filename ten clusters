@@ -1,0 +1,11 @@
+####### the file generated from "Annotating harmonised data" code is re-annotated here into 10 neuronal and one neuroimmune cell type
+
+
+new.cluster.ids <- c(rep("Oligo", 10), "Intermediate", "Dendate_Gyrus", "Interneurons", rep("Pyramidal", 9),
+                         rep("Astrocytes", 2), "Microglia", "Endothelial", "Pericyte", "ependymal", "Cd274_Neuroimmune")
+ 
+ 
+ names(new.cluster.ids) <- levels(pbmc)
+ pbmc <- RenameIdents(pbmc, new.cluster.ids)
+ levels(pbmc)
+
