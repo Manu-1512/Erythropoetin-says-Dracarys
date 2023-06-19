@@ -1,0 +1,24 @@
+library(Seurat)
+
+
+pbmc <- readRDS("Singlets/Annotating_harmonised_Pyramidal_samples.rds")
+levels(pbmc)
+my_col <- c("orange", "hotpink4", "lightpink3", "gold",
+            "navyblue", "darkorchid", "darkcyan", "turquoise", 
+            "blue", "red", 
+            "darkorange", "deeppink3", 
+            "coral3", "slateblue", "forestgreen", 
+                  "black", "slategrey", "plum", "khaki4",
+                  "darksalmon", "white")
+sample_proportion <- prop.table(table(Idents(pbmc), pbmc$orig.ident), margin = 2)
+
+dat <- sample_proportion[,c(7:12,1:6)]
+
+dat <- sample_proportion[,c(10:12,7:9,1:6)]
+
+
+png("Final_Proportion_all_EPO_PL_samples_pyramidal_lineages_Normalized_V2.png",  width = 16.7, height = 18.8, units = "cm", res = 600, pointsize = 12)
+barplot(as.matrix(dat), las=2, col=my_col, space=0.02)
+dev.off()
+
+savehistory("Proportion_all_EPO_PL_pyramidal.Rhistory")
