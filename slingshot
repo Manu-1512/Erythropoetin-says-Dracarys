@@ -1,0 +1,56 @@
+library(tidymodels)
+library(BUSpaRse)
+ library(scran)
+    library(scater)
+    library(igraph)
+library(cowplot)
+
+
+#cell_pal <- function(cell_vars, pal_fun,...) {
+ # if (is.numeric(cell_vars)) {
+  #  pal <- pal_fun(100, ...)
+   # return(pal[cut(cell_vars, breaks = 100)])
+  #} else {
+   # categories <- sort(unique(cell_vars))
+    #pal <- setNames(pal_fun(length(categories), ...), categories)
+    #return(pal[cell_vars])
+  #}
+#}
+
+#cell_colors <- cell_pal(Idents(olig), brewer_pal("qual", "Set1"))
+
+#cell_colors <- cell_pal(Idents(olig), c("slategrey","forestgreen","gold","turquoise","purple","red2"))
+
+library(tidymodels)
+library(BUSpaRse)
+ library(scran)
+    library(scater)
+    library(igraph)
+library(cowplot)
+library(slingshot)
+
+
+harmony_normalized_pyramidal_lineages_s <- subset(harmony_normalized_pyramidal_lineages, idents = c("CA1_dorsal","CA1_superficial", "New_born_CA1_deep_firing", "Ventral_CA1_migrating", 
+                                  "New_born_migrating_superficial","New_born_migrating_serotonin_firing","New_born_migrating_superficial_Sox5"))
+olig = (harmony_normalized_pyramidal_lineages_s)
+
+seu <- SCTransform(olig)
+seu <- RunPCA(seu, npcs = 6, verbose = FALSE)
+seu <- RunUMAP(seu, dims = 1:6, seed.use = 4867)
+
+sds <- slingshot(Embeddings(seu, "umap"), clusterLabels = seu$celltypes, start.clus = "New_born_migrating_superficial", stretch = 0)
+cell_colors <- cell_pal(seu$celltypes, brewer_pal("qual", "Set1"))
+
+
+dimred <- seu@reductions$umap@cell.embeddings
+clustering <- Idents(seu)
+head(clustering)
+lineages <- getLineages(data = dimred, clusterLabels = clustering)
+lineages
+curves <- getCurves(lineages, approx_points = 300, thresh = 0.01, stretch = 0.8, allow.breaks = TRUE, shrink = 0.99)
+curves
+
+png("Selected_unannotatedlineages_for_slingshot_UMAP.png",  width = 22.7, height = 20.8, units = "cm", res = 600, pointsize = 12)
+DimPlot(seu, reduction = "umap",
+        group.by = "celltypes", pt.size = 2, label = F, repel = TRUE) +
+scale_color_brewer(type = "qual", palette = "Set1") + NoLegend()
