@@ -1,0 +1,106 @@
+############ individual DEGs Violinplot, Figure 6
+
+png("ViolinPlot_DEG_Homer1_EPO_PLO.png",  width = 18.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+VlnPlot(harmony_normalized_pyramidal_lineages, c("Homer1"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
+ png("ViolinPlot_DEG_Homer1_EPO_PLO.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(harmony_normalized_pyramidal_lineages, c("Homer1"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
+ png("ViolinPlot_DEG_Cux1_EPO_PLO.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(harmony_normalized_pyramidal_lineages, c("Cux1"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
+ png("ViolinPlot_DEG_Cux2_EPO_PLO.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(harmony_normalized_pyramidal_lineages, c("Cux2"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
+ png("ViolinPlot_DEG_Nrgn_EPO_PLO.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+ VlnPlot(harmony_normalized_pyramidal_lineages, c("Nrgn"),  col=c("red2","steelblue2"), idents=c("CA1_dorsal", "CA2", "CA3_dorsal", "New_born_migrating_superficial", "New_born_migrating_serotonin_firing", "New_born_migrating_superficial_Sox5"), split.by="type", split.plot=TRUE, pt.size=0) + NoLegend()
+dev.off()
+
+
+############# heatmap Supplementary Figure 7D
+library(ComplexHeatmap)
+library(circlize)
+library(colorspace)
+library(GetoptLong)
+
+
+harmony_normalized_pyramidal_lineages_s@misc$harmony_normalized_pyramidal_lineages_s.markers <- FindAllMarkers(harmony_normalized_pyramidal_lineages_s, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.5)
+mark_s <- harmony_normalized_pyramidal_lineages_s@misc$harmony_normalized_pyramidal_lineages_s.markers
+head(mark_s)
+top100 <- harmony_normalized_pyramidal_lineages_s@misc$harmony_normalized_pyramidal_lineages_s.markers %>% group_by(cluster) %>% top_n(n = 100, wt = avg_log2FC)
+head(top100)
+
+ png("Heatmap_markers_subset_CA_samples.png",  width = 24.7, height = 22.8, units = "cm", res = 600, pointsize = 12)
+DoHeatmap(subset(harmony_normalized_pyramidal_lineages_s, downsample = 100), features = top100$gene, assay = "RNA", size = 3, angle = 45, combine = TRUE, draw.lines = FALSE,raster=T) + scale_fill_gradientn(colours=c("lightblue","white", "white",  "purple", "darkred"), values=rescale(c(-2, -1, 0, 1, 2)), guide="colorbar") + NoLegend()
+dev.off()
+
+harmony_normalized_pyramidal_lineages_s <- subset(harmony_normalized_pyramidal_lineages, idents = c("CA1_dorsal","CA1_superficial", "New_born_CA1_deep_firing", "Ventral_CA1_migrating", 
+                                  "New_born_migrating_superficial","New_born_migrating_serotonin_firing","New_born_migrating_superficial_Sox5","New_born_migrating-deep_Sox5"))
+                                  
+############ figure 2e and S4-5
+
+
+library(ComplexHeatmap)
+library(circlize)
+library(colorspace)
+library(GetoptLong)
+
+mat <- matrix(mat, ncol = ncol(mat), dimnames = dimnames(mat))
+
+mat <- mat*100
+
+mat <- mat-mean
+ha_mix_top = HeatmapAnnotation(violin = anno_density(mat, type = "violin", gp = gpar(fill = rep("grey", 93))))  
+ Heatmap(mat, name = "scaled exp", col = colorRamp2(c(-2, -1, 0, 1, 2), c("gold", "yellow", "white", "blue", "purple")), cluster_columns=F, row_names_gp = gpar(fontsize = 3), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top)
+dev.off()
+ Heatmap(mat, name = "scaled exp", col = colorRamp2(c(-2, -1, 0, 1, 2), c("gold", "yellow", "white", "lightblue", "purple")), cluster_columns=F, row_names_gp = gpar(fontsize = 3), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top)
+row.names(mat)
+ Heatmap(mat, name = "scaled exp", col = colorRamp2(c(-2, -1, 0, 1, 2), c("gold", "yellow", "white", "lightblue", "purple")), cluster_columns=F, row_names_gp = gpar(fontsize = 3), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top)
+dev.off()
+head(proportiontion)
+head(proportion)
+mat <-  as.matrix(prop.type)
+mat <- matrix(mat, ncol = ncol(mat), dimnames = dimnames(mat))
+mat
+mat <- mat*100
+mat <- mat[order(mat[,1]),]
+
+ha_mix_top = HeatmapAnnotation(violin = anno_density(mat, type = "violin", gp = gpar(fill = rep("grey", 93))))  
+ 
+png("Heatmap_absolute_proportion_EPO_PLO.png",  width = 14.7, height = 22.8, units = "cm", res = 300, pointsize = 12)
+ Heatmap(mat, name = "scaled exp", col = colorRamp2(c(0,2, 5, 10, 15), c("white","lightblue","yellow", "purple","red2")), cluster_columns=F, cluster_rows=F, row_names_gp = gpar(fontsize = 8), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top, )
+dev.off()
+
+ha_mix_top = HeatmapAnnotation(violin = anno_density(cat, type = "violin", gp = gpar(fill = rep("grey", 93))))  
+
+
+png("Heatmap_relative_proportion_EPO_PLO.png",  width = 14.7, height = 22.8, units = "cm", res = 300, pointsize = 12)
+ Heatmap(cat, name = "scaled exp", col = colorRamp2(c(-2,-1, 0,1, 2), c("lightblue","yellow","white", "purple","red2")), cluster_columns=F, cluster_rows=F, row_names_gp = gpar(fontsize = 8), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top, )
+dev.off()
+
+ha_mix_top = HeatmapAnnotation(violin = anno_density(mat, type = "violin", gp = gpar(fill = rep("grey", 93))))  
+
+
+png("Heatmap_absolute_proportion_EPO_PLO.png",  width = 14.7, height = 22.8, units = "cm", res = 300, pointsize = 12)
+ Heatmap(mat, name = "scaled exp", col = colorRamp2(c(0,2, 5, 10, 15), c("lightblue","yellow","white", "purple","red2")), cluster_columns=F, cluster_rows=F, row_names_gp = gpar(fontsize = 8), km = 4, gap = unit(1, "mm"),  top_annotation = ha_mix_top, )
+dev.off()
+
+
+png("barplot_average_num_cells_per_celltype_pyra.png",  width = 14.7, height = 22.8, units = "cm", res = 300, pointsize = 12)
+par(mar=c(2, 15, 2, 1))
+barplot(mean, horiz=T, las=2, col="slategrey", border="black")
+dev.off()
+
+
+################# bootstrap 
+dat <- AverageExpression(harmony_normalized_pyramidal_lineages_s, verbose = TRUE)
+
+var.genes <- VariableFeatures(harmony_normalized_pyramidal_lineages)
+
+set <- dat[which(row.names(dat) %in% var.genes),]
+
+pv.sample2 <- pvclust(set, method.dist="correlation", method.hclust="average",use.cor="pairwise.complete.obs", nboot=100) 
+
+png("bootstrapping_with_EPO_PL_pseudobulk_V2.png",  width = 14.8, height = 18.8, units = "cm", res = 600, pointsize = 12)
+plot(pv.sample2, print.pv=TRUE, print.num=TRUE, float=0.01,   lwd=3,  cex.pv=0.8,  col="midnightblue", cex=0.5)
+dev.off()
